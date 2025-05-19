@@ -1,39 +1,38 @@
-import { useState, useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
-import "./Login.css";
+// Login.jsx
+import React, { useState } from 'react';
+import axios from 'axios';
+import '../styles/auth.css';
 
-const Login = () => {
-  const { login } = useContext(AuthContext);
-  const [username, setUsername] = useState("");
-  const [error, setError] = useState("");
+export default function Login() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [message, setMessage] = useState('');
 
-  const handleLogin = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (username.trim() === "") {
-      setError("Username is required");
-      return;
+    try {
+      const response = await axios.post('http://localhost:5001/api/auth/login', { username, password });
+      console.log(response.data);
+      setMessage('Login successful');
+    } catch (err) {
+      setMessage('Login failed');
     }
-
-    setError("");
-    login(username);
   };
 
   return (
-    <div className="login-container">
+    <div className="auth-container">
       <h1>Login</h1>
-      <form onSubmit={handleLogin}>
-        <input
-          type="text"
-          placeholder="Enter username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-        />
-        {error && <p className="error">{error}</p>}
+      {message && <div className="error-message">{message}</div>}
+      <form onSubmit={handleSubmit}>
+        <label>Username:</label>
+        <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} required />
+
+        <label>Password:</label>
+        <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+
         <button type="submit">Login</button>
       </form>
-    </div>
+      <a href="/register" className="register-button">Register</a>
+      </div>
   );
-};
-
-export default Login;
+}

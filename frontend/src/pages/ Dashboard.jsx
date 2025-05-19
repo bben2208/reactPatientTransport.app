@@ -1,13 +1,16 @@
 import { useContext, useState } from "react";
 import { TransportContext } from "../context/TransportContext";
-import TransportItem from "../components/TransportItem";
+import { AuthContext } from "../context/AuthContext";
 import "./Dashboard.css";
 
 const Dashboard = () => {
   const { transports } = useContext(TransportContext);
+  const { user } = useContext(AuthContext);
   const [searchTerm, setSearchTerm] = useState("");
 
-  const filteredTransports = transports.filter((t) =>
+  const userTransports = user ? transports.filter((t) => t.user === user.username) : [];
+
+  const filteredTransports = userTransports.filter((t) =>
     t.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -23,17 +26,18 @@ const Dashboard = () => {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="search-input"
         />
-        <button className="create-btn">Create a New Transport</button>
       </div>
 
       {filteredTransports.length > 0 ? (
-        <ul className="transport-list">
+        <div className="transport-list">
           {filteredTransports.map((transport) => (
-            <TransportItem key={transport.id} transport={transport} />
+            <div key={transport.id} className="transport-item">
+              {transport.name}
+            </div>
           ))}
-        </ul>
+        </div>
       ) : (
-        <p className="no-transports">No transports found. Create one now!</p>
+        <p className="no-transports">No transports found.</p>
       )}
     </div>
   );

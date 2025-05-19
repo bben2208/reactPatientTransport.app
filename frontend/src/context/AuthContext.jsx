@@ -1,39 +1,51 @@
 import { createContext, useState } from "react";
-import { registerUser, loginUser } from "../services/api";
+import axios from "axios";
 
+// Create AuthContext
 export const AuthContext = createContext();
 
+// AuthProvider Component
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [authError, setAuthError] = useState(null);
+  const [loading, setLoading] = useState(false);
 
+  // Register User
   const register = async (username, password) => {
+    setLoading(true);
     try {
-      const newUser = await registerUser(username, password);
-      setUser(newUser);
+      const response = await axios.post("http://localhost:5001/api/auth/register", { username, password });
+      setUser(response.data.user);
       setAuthError(null);
     } catch (error) {
-      setAuthError(error.response?.data?.error || "Registration failed");
+      setAuthError(error.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Login User
   const login = async (username, password) => {
+    setLoading(true);
     try {
-      const loggedInUser = await loginUser(username, password);
-      setUser(loggedInUser);
+      const response = await axios.post("http://localhost:5001/api/auth/login", { username, password });
+      setUser(response.data.user);
       setAuthError(null);
     } catch (error) {
-      setAuthError(error.response?.data?.error || "Login failed");
+      setAuthError(error.response?.data?.message || "Login failed");
+    } finally {
+      setLoading(false);
     }
   };
 
+  // Logout User
   const logout = () => {
     setUser(null);
     setAuthError(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, register, login, logout, authError }}>
+    <AuthContext.Provider value={{ user, register, login, logout, authError, loading }}>
       {children}
     </AuthContext.Provider>
   );
