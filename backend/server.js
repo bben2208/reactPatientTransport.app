@@ -1,52 +1,40 @@
 require('dotenv').config();
 const express = require('express');
+const path = require('path');
+const cors = require('cors');
 const mongoose = require('mongoose');
-const methodOverride = require('method-override');
 const session = require('express-session');
 const passport = require('passport');
 const flash = require('connect-flash');
-const cors = require('cors');
-const path = require('path');
 const app = express();
-
-// Route Imports
-const transportRoutes = require('./routes/transport-routes');
-const authRoutes = require('./routes/auth');
-
-// Passport Configuration
-require('./config/passport')(passport);
-
-// MongoDB Connection
-// MongoDB Connection
-mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log('✅ Connected to MongoDB'))
-  .catch(err => console.error('❌ MongoDB connection error:', err));
-
 
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(methodOverride('_method'));
 
-// Session, Flash & Passport Middleware
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'secretKey',
-  resave: false,
-  saveUninitialized: false,
-}));
-app.use(flash());
-app.use(passport.initialize());
-app.use(passport.session());
+// Serve the frontend build folder
+app.use(express.static(path.join(__dirname, '../build')));
 
-// Routes
-app.use('/api/auth', authRoutes);    
-app.use('/api/transports', transportRoutes);
+// API Routes
+app.use('/api/auth', require('./routes/auth'));
+app.use('/api/transports', require('./routes/transport-routes'));
 
-// Default route for root URL
-app.get('/', (req, res) => {
-  res.send("Backend server is running. Use /api/auth or /api/transports.");
+// Serve the React app for any unknown routes
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, '../build', 'index.html'));
 });
 
+// Connect to MongoDB
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+})
+  .then(() => console.log('✅ Connected to MongoDB'))
+  .catch(err => console.error('❌ MongoDB connection error:', err));
+
+// Start the server
 const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
+});
