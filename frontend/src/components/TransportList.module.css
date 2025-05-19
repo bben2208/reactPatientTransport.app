@@ -1,0 +1,14 @@
+.transportList {
+    padding: 1rem;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+  }
+  
+  .transportItem {
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background-color: #e0e0e0;
+    border-radius: 3px;
+  }
+  

@@ -9,7 +9,7 @@ router.get('/', ensureAuthenticated, async (req, res) => {
     const transports = await Transport.find({ user: req.user._id });
     res.json(transports);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching transports" });
+    res.status(500).json({ message: 'Error fetching transports' });
   }
 });
 
@@ -20,7 +20,7 @@ router.post('/', ensureAuthenticated, async (req, res) => {
     await newTransport.save();
     res.status(201).json(newTransport);
   } catch (err) {
-    res.status(500).json({ message: "Error adding transport" });
+    res.status(500).json({ message: 'Error adding transport' });
   }
 });
 
