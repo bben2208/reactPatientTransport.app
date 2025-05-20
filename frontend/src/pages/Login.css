@@ -4,6 +4,7 @@
     margin: 0 auto;
     background-color: #f9f9f9;
     border-radius: 8px;
+    
   }
   
   .login-container h1 {
@@ -37,3 +38,14 @@
     margin-bottom: 0.5rem;
   }
   
+  #loginRegisterButton{
+    width: 80%;
+    padding: 0.5rem;
+    background-color:rgb(133, 212, 14);
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    border-radius: 3px;
+    font-weight: bold;
+    text-decoration: none;
+  }

@@ -32,7 +32,7 @@ export default function Login() {
 
         <button type="submit">Login</button>
       </form>
-      <a href="/register" className="register-button">Register</a>
+      <a href="/register" id='loginRegisterButton' className="register-button">Register</a>
       </div>
   );
 }
