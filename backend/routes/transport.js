@@ -15,15 +15,17 @@ router.get("/", ensureAuthenticated, async (req, res) => {
 
 // Add a New Transport
 router.post("/", ensureAuthenticated, async (req, res) => {
-  const { patientName, transportDate, destination } = req.body;
-
   try {
-    const newTransport = new Transport({ patientName, transportDate, destination });
+    const newTransport = new Transport({
+      ...req.body,
+      user: req.user.id // ✅ Attach user ID
+    });
     await newTransport.save();
     res.status(201).json({ message: "Transport added successfully" });
   } catch (err) {
     res.status(500).json({ message: "Error adding transport" });
   }
 });
+
 
 module.exports = router;
