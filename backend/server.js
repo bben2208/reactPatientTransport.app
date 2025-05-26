@@ -7,6 +7,7 @@ require("dotenv").config();
 const authRoutes = require("./routes/auth");
 const transportRoutes = require("./routes/transport");
 
+
 const app = express();
 
 app.use(cors({
@@ -17,8 +18,9 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/api/auth", authRoutes);
+app.use("/api/auth", authRoutes); // ✅ This line registers the route
 app.use("/api/transports", transportRoutes);
+
 
 app.use(express.static(path.join(__dirname, "../frontend/build")));
 

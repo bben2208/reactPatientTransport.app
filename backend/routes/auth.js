@@ -3,19 +3,26 @@ const router = express.Router();
 const jwt = require("jsonwebtoken");
 const User = require("../models/user");
 
-// ✅ Register Route
+// ✅ REGISTER Route
 router.post("/register", async (req, res) => {
-  console.log("Incoming register request:", req.body);
-
   const { username, password } = req.body;
+  
+  console.log("Incoming register request body:", req.body);
+
+  // Basic validation
+  if (!username || !password) {
+    return res.status(400).json({ message: "Username and password are required" });
+  }
 
   try {
+    // Check if username is already taken
     const existingUser = await User.findOne({ username });
     if (existingUser) {
       return res.status(400).json({ message: "User already exists" });
     }
 
-    const newUser = new User({ username, password }); // Schema will hash it
+    // Create new user (password will be hashed in the schema)
+    const newUser = new User({ username, password });
     await newUser.save();
 
     const token = jwt.sign(
@@ -27,7 +34,10 @@ router.post("/register", async (req, res) => {
     res.status(201).json({
       message: "User registered successfully",
       token,
-      user: { id: newUser._id, username: newUser.username }
+      user: {
+        id: newUser._id,
+        username: newUser.username,
+      },
     });
   } catch (err) {
     console.error("Error in registration:", err);
@@ -35,9 +45,15 @@ router.post("/register", async (req, res) => {
   }
 });
 
-// ✅ Login Route (FIXED!)
+// ✅ LOGIN Route
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
+
+  console.log("Incoming login request body:", req.body);
+
+  if (!username || !password) {
+    return res.status(400).json({ message: "Username and password are required" });
+  }
 
   try {
     const user = await User.findOne({ username });
@@ -45,7 +61,7 @@ router.post("/login", async (req, res) => {
       return res.status(400).json({ message: "User not found" });
     }
 
-    const isMatch = await user.comparePassword(password); // ✅ FIXED!
+    const isMatch = await user.comparePassword(password);
     if (!isMatch) {
       return res.status(400).json({ message: "Invalid credentials" });
     }
@@ -59,7 +75,10 @@ router.post("/login", async (req, res) => {
     res.status(200).json({
       message: "Login successful",
       token,
-      user: { id: user._id, username: user.username }
+      user: {
+        id: user._id,
+        username: user.username,
+      },
     });
   } catch (err) {
     console.error("Error in login:", err);

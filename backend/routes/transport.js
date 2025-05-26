@@ -1,31 +1,32 @@
 const express = require("express");
 const router = express.Router();
 const Transport = require("../models/transport");
-const { ensureAuthenticated } = require("../middleware/auth");
 
-// Get All Transports
-router.get("/", ensureAuthenticated, async (req, res) => {
+// GET all transports for a user
+router.get("/", async (req, res) => {
+  const { user } = req.query;
+
+  if (!user) {
+    return res.status(400).json({ message: "User ID is required" });
+  }
+
   try {
-    const transports = await Transport.find();
+    const transports = await Transport.find({ user });
     res.json(transports);
   } catch (err) {
-    res.status(500).json({ message: "Error fetching transports" });
+    res.status(500).json({ message: "Failed to fetch transports" });
   }
 });
 
-// Add a New Transport
-router.post("/", ensureAuthenticated, async (req, res) => {
+// POST a new transport
+router.post("/", async (req, res) => {
   try {
-    const newTransport = new Transport({
-      ...req.body,
-      user: req.user.id // ✅ Attach user ID
-    });
-    await newTransport.save();
-    res.status(201).json({ message: "Transport added successfully" });
+    const newTransport = new Transport(req.body);
+    const saved = await newTransport.save();
+    res.status(201).json(saved);
   } catch (err) {
-    res.status(500).json({ message: "Error adding transport" });
+    res.status(400).json({ message: "Transport creation failed", error: err });
   }
 });
-
 
 module.exports = router;

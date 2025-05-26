@@ -3,14 +3,14 @@
     "version": "1.0.0",
     "private": true,
     "scripts": {
-      "install": "cd backend && npm install && cd ../frontend && npm install",
-      "build": "cd frontend && npm run build",
-      "start": "cd backend && node server.js",
-      "dev": "concurrently \"cd backend && nodemon server.js\" \"cd frontend && npm start\""
+        "install": "cd backend && npm install && cd ../frontend && npm install",
+        "build": "cd frontend && npm run build",
+        "start": "cd backend && node server.js",
+        "dev": "concurrently \"cd backend && nodemon server.js\" \"cd frontend && npm start\""
     },
     "dependencies": {
-      "concurrently": "^7.6.0",
-      "nodemon": "^3.0.0"
+        "concurrently": "^7.6.0",
+        "nodemon": "^3.0.0",
+        "react-router-dom": "^7.6.0"
     }
-  }
-  
+}

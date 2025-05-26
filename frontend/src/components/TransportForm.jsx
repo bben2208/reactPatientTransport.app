@@ -1,9 +1,14 @@
 import { useState, useContext } from "react";
 import { TransportContext } from "../context/TransportContext";
+import { AuthContext } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "./TransportForm.css";
 
 const TransportForm = () => {
   const { addTransport } = useContext(TransportContext);
+  const { user } = useContext(AuthContext); // ✅ get current user
+  const navigate = useNavigate();
+
   const [name, setName] = useState("");
   const [mobility, setMobility] = useState("own chair");
   const [pickup, setPickup] = useState("");
@@ -20,7 +25,7 @@ const TransportForm = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    addTransport({
+    const newTransport = {
       name,
       mobility,
       pickup,
@@ -33,8 +38,14 @@ const TransportForm = () => {
       dnar,
       respectForm,
       bariatric,
-    });
-
+      user: user?._id || user?.id || user?.username || "unknown", // ✅ FOR SURE
+      id: crypto.randomUUID(),
+    };
+    
+    console.log("Submitting transport for user:", newTransport.user);
+    addTransport(newTransport);
+    
+    // Reset form
     setName("");
     setPickup("");
     setDropoff("");
@@ -46,6 +57,8 @@ const TransportForm = () => {
     setDnar("yes");
     setRespectForm("yes");
     setBariatric("yes");
+
+    navigate("/dashboard");
   };
 
   const toggleOption = (setter, value) => {
@@ -55,10 +68,13 @@ const TransportForm = () => {
   return (
     <div className="form-container">
       <h1>Create Transport</h1>
+      <button onClick={() => navigate("/dashboard")} className="back-button">
+        ← Back to Dashboard
+      </button>
       <form className="transport-form" onSubmit={handleSubmit}>
         <div className="form-group">
           <label>Name:</label>
-          <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
+          <input type="text" value={name} onChange={(e) => setName(e.target.value)} required />
         </div>
 
         <div className="form-group">
@@ -79,14 +95,18 @@ const TransportForm = () => {
             <div className="form-group toggle-group" key={label}>
               <label>{label}:</label>
               <div className="toggle-btn">
-                <div 
+                <div
                   className={`option yes ${stateValues[index] === "yes" ? "active" : ""}`}
                   onClick={() => toggleOption(stateSetters[index], "yes")}
-                >Y</div>
-                <div 
+                >
+                  Y
+                </div>
+                <div
                   className={`option no ${stateValues[index] === "no" ? "active" : ""}`}
                   onClick={() => toggleOption(stateSetters[index], "no")}
-                >N</div>
+                >
+                  N
+                </div>
               </div>
             </div>
           );
@@ -94,32 +114,32 @@ const TransportForm = () => {
 
         <div className="form-group">
           <label>Pickup Address:</label>
-          <input type="text" value={pickup} onChange={(e) => setPickup(e.target.value)} />
+          <input type="text" value={pickup} onChange={(e) => setPickup(e.target.value)} required />
         </div>
 
         <div className="form-group">
           <label>Dropoff Address:</label>
-          <input type="text" value={dropoff} onChange={(e) => setDropoff(e.target.value)} />
+          <input type="text" value={dropoff} onChange={(e) => setDropoff(e.target.value)} required />
         </div>
 
         <div className="form-group">
           <label>Pickup Mileage:</label>
-          <input type="number" value={pickupMileage} onChange={(e) => setPickupMileage(e.target.value)} />
+          <input type="number" value={pickupMileage} onChange={(e) => setPickupMileage(e.target.value)} required />
         </div>
 
         <div className="form-group">
           <label>Dropoff Mileage:</label>
-          <input type="number" value={dropoffMileage} onChange={(e) => setDropoffMileage(e.target.value)} />
+          <input type="number" value={dropoffMileage} onChange={(e) => setDropoffMileage(e.target.value)} required />
         </div>
 
         <div className="form-group">
           <label>Pickup Time:</label>
-          <input type="datetime-local" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} />
+          <input type="datetime-local" value={pickupTime} onChange={(e) => setPickupTime(e.target.value)} required />
         </div>
 
         <div className="form-group">
           <label>Dropoff Time:</label>
-          <input type="datetime-local" value={dropoffTime} onChange={(e) => setDropoffTime(e.target.value)} />
+          <input type="datetime-local" value={dropoffTime} onChange={(e) => setDropoffTime(e.target.value)} required />
         </div>
 
         <button type="submit" className="submit-btn">Create Transport</button>
